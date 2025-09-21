@@ -1,21 +1,19 @@
-
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os   
 
+# Read the DB URL from environment variables (must be set in Vercel / local .env)
+DATABASE_URL = os.environ["DATABASE_URL"]
 
-DATA_BASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://neondb_owner:npg_ELjDoX5qF3Yx@ep-calm-leaf-ad9rqheu-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
-)
-engine=create_engine(DATA_BASE_URL)
+# Create the SQLAlchemy engine
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
-SessionLocal=sessionmaker(autoflush=False,bind=engine,autocommit=False)
+# Configure session maker
+SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
-
-
+# Dependency for FastAPI
 def get_db():
-    db=SessionLocal()
+    db = SessionLocal()
     try:
         yield db
     finally:
